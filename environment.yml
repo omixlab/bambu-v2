@@ -1,0 +1,14 @@
+name: bambu
+channels:
+  - anaconda
+  - bioconda
+  - rdkit
+dependencies:
+  - python=3.8
+  - jupyter
+  - pip
+  - rdkit
+  - cmake
+  - pip:
+     - -r requirements.txt
+     - -e .

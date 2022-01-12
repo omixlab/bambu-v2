@@ -11,4 +11,5 @@ dependencies:
   - cmake
   - pip:
      - -r requirements.txt
+     - twine
      - -e .

@@ -13,5 +13,7 @@ setup(
         'bambu-train      = bambu.train:main',
         'bambu-predict    = bambu.predict:main',
         ]},
-    requires = [requirement.strip('\n') for requirement in open("requirements.txt")]
+    install_requires = [
+        requirement.strip('\n') for requirement in open("requirements.txt")
+    ]
 )

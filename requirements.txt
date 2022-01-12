@@ -3,8 +3,6 @@ numpy
 scikit-learn
 flaml
 imbalanced-learn 
-flask
-flask_sqlalchemy
 requests
 tqdm
 xgboost

@@ -1,4 +1,4 @@
-name: bambu
+name: bambu-qsar
 channels:
   - anaconda
   - bioconda

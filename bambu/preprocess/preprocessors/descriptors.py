@@ -2,9 +2,7 @@ from rdkit.Chem import Descriptors
 
 class DescriptorsPreprocessor:
 
-    def __init__(self, bits, radius):
-        self.bits = bits
-        self.radius = radius
+    def __init__(self):
         self.features = list(dict(Descriptors._descList).keys())
 
     def compute_features(self, mol):

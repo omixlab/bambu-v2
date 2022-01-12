@@ -1,3 +1,4 @@
+from bambu.preprocess.preprocessors.descriptors import DescriptorsPreprocessor
 from bambu.preprocess.preprocessors.morgan import MorganPreprocessor
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -16,7 +17,7 @@ def main():
     argument_parser.add_argument('--input', required=True)
     argument_parser.add_argument('--output', required=True)
     argument_parser.add_argument('--output-preprocessor', required=True)
-    argument_parser.add_argument('--feature-type', choices=['morgan-1028'], default='morgan-1028')
+    argument_parser.add_argument('--feature-type', choices=['descriptors', 'morgan-1024', 'morgan-2048'], default='morgan-1028')
     argument_parser.add_argument('--train-test-split-percent', type=float, default=0.75)
     argument_parser.add_argument('--undersample', action='store_true', default=False)
     arguments = argument_parser.parse_args()
@@ -46,6 +47,9 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
     if feature_type.startswith('morgan'):
         bits = int(feature_type.split('-')[1])
         preprocessor = MorganPreprocessor(bits=bits, radius=2)
+        
+    elif feature_type == "descriptors":
+        preprocessor = DescriptorsPreprocessor()
     
     for r, row in tqdm(df_input.iterrows(), total=df_input.shape[0]):
     

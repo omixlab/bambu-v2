@@ -9,6 +9,7 @@ def main():
     argument_parser = ArgumentParser(description="")
     argument_parser.add_argument('--input-train', required=True)
     argument_parser.add_argument('--input-test', required=True)
+    argument_parser.add_argument('--estimator-list', required=True)
     argument_parser.add_argument('--output', required=True)
     arguments = argument_parser.parse_args()
 

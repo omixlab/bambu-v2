@@ -20,7 +20,7 @@ $ pip install bambu-qsar
 ### Intalling as an environment using `conda`:
 
 ```
-$ git clone 
+$ git clone https://github.com/omixlab/bambu-v2
 $ cd bambu-qsar
 $ conda env create --file environment.yml
 $ conda activate bambu-qsar

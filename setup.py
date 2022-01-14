@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="bambu-qsar",
-    version='0.0.5',
+    version='0.0.6',
     packages=find_packages(),
-    author="Isadora Leitzke Guidotti",
-    author_email="leitzke.gi@gmail.com",
-    description="bambu",
+    author="Isadora Leitzke Guidotti, Frederico Schmitt Kremer",
+    author_email="leitzke.gi@gmail.com, fred.s.kremer@gmail.com",
+    description="bambu (bioassays model builder) is CLI tool to build QSAR models based on PubChem BioAssays datasets",
     long_description=open("README.md").read(),
     long_description_content_type='text/markdown',
     keywords="bioinformatics machine-learning data science drug discovery QSAR",

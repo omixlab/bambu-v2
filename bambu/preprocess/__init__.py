@@ -1,26 +1,43 @@
+from bambu.logo import logo
 from bambu.preprocess.preprocessors.descriptors import DescriptorsPreprocessor
 from bambu.preprocess.preprocessors.morgan import MorganPreprocessor
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from argparse import ArgumentParser
+from argparse import Action, ArgumentParser, _HelpAction
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from imblearn.under_sampling import RandomUnderSampler 
+import argparse
 import pandas as pd
 import numpy as np
 import pickle
 import os
+import sys
 
 def main():
-    
-    argument_parser = ArgumentParser(description="Utilitary script to download sustance/compound data for a PubChem BioAssay")
-    argument_parser.add_argument('--input', required=True)
-    argument_parser.add_argument('--output', required=True)
-    argument_parser.add_argument('--output-preprocessor', required=True)
-    argument_parser.add_argument('--feature-type', choices=['descriptors', 'morgan-1024', 'morgan-2048'], default='morgan-1028')
-    argument_parser.add_argument('--train-test-split-percent', type=float, default=0.75)
-    argument_parser.add_argument('--undersample', action='store_true', default=False)
+
+    if '--list-descriptors' in sys.argv:
+        for feature in DescriptorsPreprocessor().features:
+            print(feature)
+        exit(0)
+
+    print(logo)
+
+    argument_parser = ArgumentParser(prog="bambu-preprocess", description="Computes descriptors or fingerprints for molecules from a BioAssays")
+    argument_parser.add_argument('--input', required=True, help="path of the input CSV file containing molecules InchI string and biological activity")
+    argument_parser.add_argument('--output', required=True, help="path of the output CSV file containing the computed features")
+    argument_parser.add_argument('--output-preprocessor', required=True, help="path of the output preprocessor object to be used by bambu-predict")
+    argument_parser.add_argument('--feature-type', choices=['descriptors', 'morgan-1024', 'morgan-2048'], default='morgan-1028', help="type of feature to be computed")
+    argument_parser.add_argument('--train-test-split-percent', type=float, default=0.75, help="percent of the dataset to be used for training")
+    argument_parser.add_argument('--list-descriptors', default=False, action='store_true', help="list all descriptors available when using --feature-type descriptors.")
+    argument_parser.add_argument('--descriptors', nargs="+", default=None, help="list of descriptors to be used when using --feature-type descriptors. If not specified, all RDKit descriptors will be used")
+    argument_parser.add_argument('--undersample', action='store_true', default=False, help="balance dataset using random undersampling before computing features")
     arguments = argument_parser.parse_args()
+
+    if arguments.list_descriptors:
+        for descriptor in DescriptorsPreprocessor().features:
+            print(descriptor)
+        exit(0)
 
     preprocess(
         arguments.input, 
@@ -28,10 +45,11 @@ def main():
         arguments.output_preprocessor, 
         arguments.feature_type, 
         train_test_split_percent=arguments.train_test_split_percent, 
-        undersample=arguments.undersample
+        undersample=arguments.undersample,
+        descriptors=arguments.descriptors
     )
 
-def preprocess(input_file, output_file, output_preprocessor_file, feature_type, train_test_split_percent=None, undersample=False):
+def preprocess(input_file, output_file, output_preprocessor_file, feature_type, train_test_split_percent=None, undersample=False, descriptors=None):
 
     df_input = pd.read_csv(input_file)
     
@@ -47,7 +65,7 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
     if feature_type.startswith('morgan'):
         bits = int(feature_type.split('-')[1])
         preprocessor = MorganPreprocessor(bits=bits, radius=2)
-        
+
     elif feature_type == "descriptors":
         preprocessor = DescriptorsPreprocessor()
     

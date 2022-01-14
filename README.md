@@ -1,9 +1,13 @@
 # Bambu
 
-Bambu (*BioAssays Model Builder*), is a simple tool to generate QSAR models based on PubChem BioAssays datasets. It uses mainly on RDKit and the FLAML AutoML library and provides utilitaries for downloading, preprocessing, training and provisioning of predictive models in distributed environments.
+Bambu (*BioAssays Model Builder*), is a simple tool to generate QSAR models based on PubChem BioAssays datasets. It uses mainly on RDKit and the FLAML AutoML library and provides utilitaries for downloading and preprocessing datasets, as well training and running the predictive models.
 
 
 ## Installing
+
+### Installing as a conda package using `conda`:
+
+*coming soon*
 
 ### Installing as a PyPI package using `pip`:
 
@@ -11,7 +15,7 @@ Bambu (*BioAssays Model Builder*), is a simple tool to generate QSAR models base
 $ pip install bambu-qsar
 ```
 
-* Note: * RDKit must be installed separately.
+**Note:** RDKit must be installed separately.
 
 ### Intalling as an environment using `conda`:
 
@@ -29,11 +33,10 @@ Downloads a PubChem BioAssays data and save in a CSV file, containing the InchI 
 ```
 $ bambu-download \
     --pubchem-assay-id 29 \
-    --pubchem-molecule-type compounds \
     --output 29_raw.csv
 ```
 
-The generated output contains the columns `pubchem_molecule_id` (Substance ID or Compound ID, depending on the option selected during download), `pubchem_molecule_type` (`compounds` or `substances`), `InChI` and `activity`. Only the fields `InchI` and `activity` are used
+The generated output contains the columns `pubchem_molecule_id` (Substance ID or Compound ID, depending on the option selected during download), `InChI` and `activity`. Only the fields `InchI` and `activity` are used
 in futher steps.
 
 ## Computing descriptors or fingerprints
@@ -52,20 +55,31 @@ $ bambu-preprocess \
 
 ## Train
 
-Trains a classification model using the FLAML AutoML framework based on the `bambu-preprocess` output datasets.
+Trains a classification model using the FLAML AutoML framework based on the `bambu-preprocess` output datasets. The user may adjust most of the `flaml.automl.AutoML` parameters using the command line arguments.
+CLI arguments.
 
 ```
 $ bambu-train \
-    --input-train \
-    --input-test \
-    --output 29_model.picle \
+	--input-train 29_preprocess_train.csv \
+	--input-test 29_preprocess_test.csv \
+	--output 29_model.pickle \
+	--model-history \
+	--max-iter 10 \
+	--time-budget 10 \
+	--estimators rf extra_tree
 ``` 
 
-
+A list of all available estimators can be accessed using the command `bambu-train --list-estimators`. Currently, only `rf` (*Random Forest*) and `extra_tree` are available.
 
 ## Predict
 
+Receives an inputs, preprocess it using a preprocess object (generated using `bambu-preprocess`) and then runs a classification model (generated using `bambu-train`). Results are saved in a CSV file.
+
 ```
-$ bambu-predict
+$ bambu-predict \
+	--input pubchem_compounds.sdf \
+	--preprocessor $29_preprocessor.pickle \
+	--model $29_model.pickle \
+	--output $29_predictions.csv
 ``` 
 

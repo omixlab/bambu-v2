@@ -78,8 +78,8 @@ Receives an inputs, preprocess it using a preprocess object (generated using `ba
 ```
 $ bambu-predict \
 	--input pubchem_compounds.sdf \
-	--preprocessor $29_preprocessor.pickle \
-	--model $29_model.pickle \
-	--output $29_predictions.csv
+	--preprocessor 29_preprocessor.pickle \
+	--model 29_model.pickle \
+	--output 29_predictions.csv
 ``` 
 

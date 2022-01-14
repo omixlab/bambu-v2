@@ -67,7 +67,6 @@ def get_assay_molecules_ids(pubchem_assay_id, pubchem_molecule_type='substances'
     
     return response_data['InformationList']['Information'][0][subset.upper()]
 
-@retry(stop_max_attempt_number=20, wait_random_min=10000, wait_random_max=30000)
 def get_molecules_InChIs(pubchem_molecules_ids, pubchem_molecule_type='substances', pubchem_InchI_chunksize=50):
     
     InChI_dict = {}
@@ -83,12 +82,16 @@ def get_molecules_InChIs(pubchem_molecules_ids, pubchem_molecule_type='substance
         
         pubchem_molecules_ids_chunk = pubchem_molecules_ids[i:i+pubchem_InchI_chunksize]
         request_uri = f'{API_ENDPOINT}/{pubchem_molecule_type.strip("s")}/{subset}/{",".join([str(pubchem_id) for pubchem_id in pubchem_molecules_ids_chunk])}/property/InChI/JSON'
-        response = requests.get(request_uri).text
-        response_data = json.loads(response)
-        for pubchem_molecule in response_data['PropertyTable']['Properties']:
+        response_data = request_json_properties_data(request_uri)
+        for pubchem_molecule in response_data:
             InChI_dict[pubchem_molecule[subset.upper()]] = pubchem_molecule['InChI']
 
     return InChI_dict
+
+@retry(stop_max_attempt_number=100, wait_random_min=10000, wait_random_max=30000)
+def request_json_properties_data(request_uri):
+    response = requests.get(request_uri).text
+    return json.loads(response)['PropertyTable']['Properties']
 
 if __name__ == '__main__':
     main()

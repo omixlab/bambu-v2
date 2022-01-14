@@ -2,6 +2,9 @@
 
 Bambu (*BioAssays Model Builder*), is a simple tool to generate QSAR models based on PubChem BioAssays datasets. It uses mainly on RDKit and the FLAML AutoML library and provides utilitaries for downloading and preprocessing datasets, as well training and running the predictive models.
 
+## Try it!
+
+[Try Bambu on this Google Colab Notebook ^^](https://colab.research.google.com/github/omixlab/bambu-v2/blob/main/notebooks/Bambu%20Google%20Colab%20Tutorial.ipynb)
 
 ## Installing
 

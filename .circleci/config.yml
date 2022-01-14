@@ -1,0 +1,20 @@
+version: 2.1
+orbs:
+  python: circleci/python@1.2
+jobs:
+  create-environment: 
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Install dependnecies
+          # This assumes pytest is installed via the install-package step above
+          command: conda env create --file environment.yml
+
+workflows:
+  sample:
+    jobs:
+      - create-environment

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="bambu-qsar",
-    version='0.0.8',
+    version='0.0.9',
     packages=find_packages(),
     author="Isadora Leitzke Guidotti, Frederico Schmitt Kremer",
     author_email="leitzke.gi@gmail.com, fred.s.kremer@gmail.com",

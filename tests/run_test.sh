@@ -31,8 +31,8 @@ bambu-train \
 	--input-test $PUBCHEM_BIOASSAY_ID\_preprocess_test.csv \
 	--output $PUBCHEM_BIOASSAY_ID\_model.pickle \
 	--model-history \
-	--max-iter 10 \
-	--time-budget 10 \
+	--max-iter 10000 \
+	--time-budget 3600 \
 	--estimators rf extra_tree
 
 # runs the predictive model against a new set of molecules

@@ -1,27 +1,39 @@
 from flaml.model import SKLearnEstimator
 from flaml import tune
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 import numpy as np
 import time
 
-class DecisionTreeEstimator(SKLearnEstimator):
-    """The class for tuning a Decision Tree Classifier"""
+class GradientBoostingEstimator(SKLearnEstimator):
+    """The class for tuning a Tree-based Gradient Boosting Classifier"""
 
     @classmethod
     def search_space(cls, data_size, **params):
        
         search_space = {
+            "loss": {
+                "domain": tune.choice(["deviance", "exponential"]),
+                "init_value": "deviance"
+            },
+            "learning_rate": {
+                "domain": tune.uniform(lower=1e-5, upper=1 - 1e-5),
+                "init_value": 1e-5
+            },
+            "n_estimators": {
+                "domain": tune.randint(lower=2, upper=200),
+                "init_value": 2
+            },
+            "subsample": {
+                "domain": tune.uniform(lower=1e-2, upper=1.0),
+                "init_value": 1.0
+            },
             "criterion": {
-                "domain": tune.choice(["gini", "entropy"]),
-                "init_value": "gini"
+                "domain": tune.choice(["friedman_mse", "squared_error", "mse", "mae"]),
+                "init_value": "friedman_mse"
             },
             "max_depth": {
                 "domain": tune.randint(lower=4, upper=200),
                 "init_value": 4
-            },
-            "splitter": {
-                "domain": tune.choice(["best", "random"]),
-                "init_value": "best"
             },
             "min_samples_split": {
                 "domain": tune.randint(lower=2, upper=data_size[0]),
@@ -76,12 +88,12 @@ class DecisionTreeEstimator(SKLearnEstimator):
         for param in self.params:
             if param not in self._hyperameters:
                 del hyperparameters[param]
-        dtc = DecisionTreeClassifier(**hyperparameters)
+        gb = GradientBoostingClassifier(**hyperparameters)
         start_time = time.time()
         deadline = start_time + budget if budget else np.inf
-        dtc.fit(X_train, y_train)        
+        gb.fit(X_train, y_train)        
         train_time = time.time() - start_time
-        self._model = dtc
+        self._model = gb
         return train_time
 
     def predict(self, X_test):

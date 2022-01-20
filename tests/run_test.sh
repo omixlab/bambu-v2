@@ -33,7 +33,7 @@ bambu-train \
 	--model-history \
 	--max-iter 10000 \
 	--time-budget 3600 \
-	--estimators rf extra_tree
+	--estimators decision_tree
 
 # runs the predictive model against a new set of molecules
 

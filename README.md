@@ -8,10 +8,6 @@ Bambu (*BioAssays Model Builder*), is a simple tool to generate QSAR models base
 
 ## Installing
 
-### Installing as a conda package using `conda`:
-
-*coming soon*
-
 ### Installing as a PyPI package using `pip`:
 
 ```
@@ -27,6 +23,12 @@ $ git clone https://github.com/omixlab/bambu-v2
 $ cd bambu-qsar
 $ conda env create --file environment.yml
 $ conda activate bambu-qsar
+```
+
+### Running it with Docker
+
+```
+$ docker run -ti omixlab/bambu-qsar:latest
 ```
 
 ## Downloading a PubChem BioAssays data

@@ -3,8 +3,10 @@ from bambu.models import DecisionTreeEstimator, SvmEstimator, LogisticRegression
 from argparse import ArgumentParser
 from flaml import AutoML
 from sklearn.metrics import classification_report
+from y_scramble import Scrambler
 import pandas as pd
 import pickle
+import json
 import sys
 
 CUSTOM_ESTIMATORS = {
@@ -78,7 +80,7 @@ def train(input_train, input_test, output, estimators=['rf'], threads=1, time_bu
 
     for estimator_name, estimator_class in CUSTOM_ESTIMATORS.items():
        automl.add_learner(estimator_name, estimator_class)
-
+    print(estimators)
     automl.fit(
         X_train, y_train, 
         task="classification", 
@@ -91,16 +93,38 @@ def train(input_train, input_test, output, estimators=['rf'], threads=1, time_bu
         retrain_full=retrain_full, 
         model_history=model_history
     )
-    y_pred = automl.predict(X_test)
-    report = classification_report(y_test, y_pred)
 
-    print(report)
+    report = validate_model(automl._trained_estimator, X_test, y_test)
     
     with open(output, 'wb') as model_writer:
         model_writer.write(pickle.dumps(automl, protocol=pickle.HIGHEST_PROTOCOL))
 
     with open(output+'_classification_report.txt', 'w') as report_writer:
-        report_writer.write(report)
+        report_writer.write(json.dumps(report, indent=4))
+
+def validate_model(model, X_test, y_test, metrics=["accurary", "recall", "precision", "f1", "roc_auc"]):
+    
+    model_validation_data = {}
+    scrambler = Scrambler(model, iterations=100)
+    for metric in metrics:
+        scores, zscores, pvalues, _ = scrambler.validate(
+            X_test, y_test,  
+            scoring="accuracy", 
+            method="cross_validation",
+            cross_val_score_aggregator="mean"
+        )
+        
+        model_validation_data[metric] = {
+            "base_model_score": scores[0],
+            "y-randomized_model_scores": list(scores[1::]),
+            "base_model_z-score": zscores[0],
+            "y-randomized_models_z-scores": list(zscores[1::]),
+            "base_model_p-value": pvalues[0],
+            "y-randomized_models_p-values": list(pvalues[1::]),
+        }
+
+    return model_validation_data
+
 
 if __name__ == "__main__":
     main()

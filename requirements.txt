@@ -8,3 +8,4 @@ tqdm
 xgboost
 lightgbm
 retrying
+y-scramble

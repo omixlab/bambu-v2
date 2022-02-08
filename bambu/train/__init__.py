@@ -6,10 +6,11 @@ from sklearn.metrics import classification_report
 import pandas as pd
 import pickle
 import sys
+import json
 
 CUSTOM_ESTIMATORS = {
     'decision_tree': DecisionTreeEstimator,
-    'svm': SvmEstimator,
+    #'svm': SvmEstimator,
     'logistic_regression': LogisticRegressionEstimator,
     #"neural_network": NeuralNetworkEstimator,
     "gradient_boosting": GradientBoostingEstimator
@@ -93,7 +94,7 @@ def train(input_train, input_test, output, estimators=['rf'], threads=1, time_bu
     )
     y_pred = automl.predict(X_test)
     report = classification_report(y_test, y_pred)
-
+    report_dict = classification_report(y_test, y_pred, output_dict=True)
     print(report)
     
     with open(output, 'wb') as model_writer:
@@ -101,6 +102,9 @@ def train(input_train, input_test, output, estimators=['rf'], threads=1, time_bu
 
     with open(output+'_classification_report.txt', 'w') as report_writer:
         report_writer.write(report)
+    
+    with open(output+'_classification_report.json', 'w') as report_writer_json:
+        report_writer_json.write(json.dumps(report_dict))
 
 if __name__ == "__main__":
     main()

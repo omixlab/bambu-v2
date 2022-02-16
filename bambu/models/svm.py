@@ -17,7 +17,7 @@ class SvmEstimator(SKLearnEstimator):
                 "init_value": 1e-5
             },
             "kernel": {
-                "domain": tune.choice(["linear", "poly", "rbf", "sigmoid", "precomputed"]),
+                "domain": tune.choice(["linear", "poly", "rbf", "sigmoid"]),
                 "init_value": "rbf"
             },
             "degree": {
@@ -47,10 +47,6 @@ class SvmEstimator(SKLearnEstimator):
             "max_iter": {
                 "domain": tune.randint(lower=-1, upper=10),
                 "init_value": -1               
-            },
-            "decision_function_shape": {
-                "domain": tune.choice(["ovo", "ovr"]),
-                "init_value": "ovr"
             },
             "break_ties": {
                 "domain": tune.choice([False, True]),

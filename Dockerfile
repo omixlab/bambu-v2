@@ -1,5 +1,4 @@
 FROM continuumio/miniconda3
-
 COPY . /home/
 WORKDIR /home/
 RUN conda env create --file environment.yml

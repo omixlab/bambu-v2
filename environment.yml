@@ -3,6 +3,7 @@ channels:
   - anaconda
   - bioconda
   - rdkit
+  - mordred
   - conda-forge
 dependencies:
   - python=3.8
@@ -10,7 +11,9 @@ dependencies:
   - pip
   - rdkit
   - cmake
+  - mordred
   - pip:
+     - git+https://github.com/samoturk/mol2vec
      - -r requirements.txt
      - twine
      - -e .

@@ -15,6 +15,7 @@ setup(
         'bambu-preprocess = bambu.preprocess:main',
         'bambu-train      = bambu.train:main',
         'bambu-predict    = bambu.predict:main',
+        'bambu-validate   = bambu.validate:main',
         ]},
     install_requires = [
         requirement.strip('\n') for requirement in open("requirements.txt")

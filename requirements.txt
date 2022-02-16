@@ -8,4 +8,4 @@ tqdm
 xgboost
 lightgbm
 retrying
-y-scramble
+gensim==3.8.3

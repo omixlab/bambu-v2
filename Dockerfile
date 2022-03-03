@@ -1,6 +1,8 @@
 FROM continuumio/miniconda3
 COPY . /home/
-WORKDIR /home/
+WORKDIR /home
+RUN apt-get update
+RUN apt install -y build-essential
 RUN conda env create --file environment.yml
 RUN conda init bash
 

@@ -1,10 +1,11 @@
+PLATFORM  := linux
 PYPI_USER := ""
 PYPI_PASS := ""
 DOCKER_IMAGE_ID  := ""
 DOCKER_IMAGE_TAG := "latest"
 
 setup:
-	@conda env create --file environment.yml || conda env update --file environment.yml
+	@conda env create --file environment.$(PLATFORM).yml || conda env update --file environment.$(PLATFORM).yml
 
 build_pypi_package:
 	rm -rf build/

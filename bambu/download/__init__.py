@@ -30,7 +30,7 @@ def download_pubchem_assay_data(pubchem_assay_id, output, pubchem_InchI_chunksiz
 
     df = pd.DataFrame(columns=['pubchem_molecule_id', 'pubchem_molecule_type', 'InChI', 'activity'])
 
-    for activity in ['active', 'inactive']:
+    for a, activity in enumerate(['active', 'inactive']):
 
         pubchem_ids = get_assay_molecules_ids(
             pubchem_assay_id=pubchem_assay_id, 
@@ -42,16 +42,30 @@ def download_pubchem_assay_data(pubchem_assay_id, output, pubchem_InchI_chunksiz
 
         InChIs = get_molecules_InChIs(pubchem_ids, pubchem_molecule_type=pubchem_molecule_type, pubchem_InchI_chunksize=pubchem_InchI_chunksize)
 
-        for pubchem_molecule_id, InChI in InChIs.items():
+        values_pubchem_molecule_ids  = list(InChIs.keys())
+        values_pubchem_molecule_type = [pubchem_molecule_type for _ in InChIs]
+        values_InChI                 = list(InChIs.values())
+        values_activity              = [activity for _ in InChIs]
 
-            df = df.append({
-                'pubchem_molecule_id':pubchem_molecule_id, 
-                'pubchem_molecule_type': pubchem_molecule_type,
-                'InChI': InChI,
-                'activity': activity
-            }, ignore_index=True)
+        df = pd.DataFrame(
+                 {
+                    'pubchem_molecule_id': values_pubchem_molecule_ids,
+                    'pubchem_molecule_type': values_pubchem_molecule_type,
+                    'InChI': values_InChI,
+                    'activity': values_activity
+                 },
+            columns=['pubchem_molecule_id', 'pubchem_molecule_type', 'InChI', 'activity']
+        )
 
-    df.to_csv(output, index=False)        
+
+
+        df.to_csv(
+            output,
+            index=False,
+            mode="w" if a == 0 else "a",
+            header=True if a == 0 else False
+        )
+
 
 def get_assay_molecules_ids(pubchem_assay_id, pubchem_molecule_type='substances', activity="all"):
     

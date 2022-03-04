@@ -5,7 +5,6 @@ flaml
 imbalanced-learn 
 requests
 tqdm
-xgboost
 lightgbm
 retrying
 gensim==3.8.3

@@ -1,6 +1,5 @@
 from bambu.logo import logo
 from argparse import ArgumentParser
-from y_scramble import Scrambler
 from sklearn.metrics import SCORERS
 import numpy as np
 import scipy

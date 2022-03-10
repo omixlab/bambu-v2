@@ -1,0 +1,20 @@
+name: bambu-qsar
+channels:
+  - bioconda
+  - rdkit
+  - mordred
+  - conda-forge
+  - msys2
+dependencies:
+  - python=3.8
+  - jupyter
+  - pip
+  - rdkit
+  - mordred
+  - m2-bash
+  - m2-gzip
+  - pip:
+     - git+https://github.com/samoturk/mol2vec
+     - -r requirements.txt
+     - twine
+     - -e .

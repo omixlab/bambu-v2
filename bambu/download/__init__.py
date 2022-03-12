@@ -30,6 +30,8 @@ def download_pubchem_assay_data(pubchem_assay_id, output, pubchem_InchI_chunksiz
 
     df = pd.DataFrame(columns=['pubchem_molecule_id', 'pubchem_molecule_type', 'InChI', 'activity'])
 
+    counter = 0
+
     for a, activity in enumerate(['active', 'inactive']):
 
         pubchem_ids = get_assay_molecules_ids(
@@ -40,31 +42,31 @@ def download_pubchem_assay_data(pubchem_assay_id, output, pubchem_InchI_chunksiz
 
         print(f'Downloading {activity} molecules ...')
 
-        InChIs = get_molecules_InChIs(pubchem_ids, pubchem_molecule_type=pubchem_molecule_type, pubchem_InchI_chunksize=pubchem_InchI_chunksize)
+        for InChIs in get_molecules_InChIs(pubchem_ids, pubchem_molecule_type=pubchem_molecule_type, pubchem_InchI_chunksize=pubchem_InchI_chunksize):
 
-        values_pubchem_molecule_ids  = list(InChIs.keys())
-        values_pubchem_molecule_type = [pubchem_molecule_type for _ in InChIs]
-        values_InChI                 = list(InChIs.values())
-        values_activity              = [activity for _ in InChIs]
+            values_pubchem_molecule_ids  = list(InChIs.keys())
+            values_pubchem_molecule_type = [pubchem_molecule_type for _ in InChIs]
+            values_InChI                 = list(InChIs.values())
+            values_activity              = [activity for _ in InChIs]
 
-        df = pd.DataFrame(
-                 {
-                    'pubchem_molecule_id': values_pubchem_molecule_ids,
-                    'pubchem_molecule_type': values_pubchem_molecule_type,
-                    'InChI': values_InChI,
-                    'activity': values_activity
-                 },
-            columns=['pubchem_molecule_id', 'pubchem_molecule_type', 'InChI', 'activity']
-        )
+            df = pd.DataFrame(
+                        {
+                        'pubchem_molecule_id': values_pubchem_molecule_ids,
+                        'pubchem_molecule_type': values_pubchem_molecule_type,
+                        'InChI': values_InChI,
+                        'activity': values_activity
+                        },
+                columns=['pubchem_molecule_id', 'pubchem_molecule_type', 'InChI', 'activity']
+            )
 
+            df.to_csv(
+                output,
+                index=False,
+                mode="w" if counter == 0 else "a",
+                header=True if counter == 0 else False
+            )
 
-
-        df.to_csv(
-            output,
-            index=False,
-            mode="w" if a == 0 else "a",
-            header=True if a == 0 else False
-        )
+            counter += 1
 
 
 def get_assay_molecules_ids(pubchem_assay_id, pubchem_molecule_type='substances', activity="all"):
@@ -83,8 +85,6 @@ def get_assay_molecules_ids(pubchem_assay_id, pubchem_molecule_type='substances'
 
 def get_molecules_InChIs(pubchem_molecules_ids, pubchem_molecule_type='substances', pubchem_InchI_chunksize=50):
     
-    InChI_dict = {}
-    
     if pubchem_molecule_type == "substances":
         subset = "sid"
     elif pubchem_molecule_type == "compounds":
@@ -94,13 +94,15 @@ def get_molecules_InChIs(pubchem_molecules_ids, pubchem_molecule_type='substance
 
     for i in tqdm(range(0, len(pubchem_molecules_ids), pubchem_InchI_chunksize)):
         
+        InChI_dict = {}
+
         pubchem_molecules_ids_chunk = pubchem_molecules_ids[i:i+pubchem_InchI_chunksize]
         request_uri = f'{API_ENDPOINT}/{pubchem_molecule_type.strip("s")}/{subset}/{",".join([str(pubchem_id) for pubchem_id in pubchem_molecules_ids_chunk])}/property/InChI/JSON'
         response_data = request_json_properties_data(request_uri)
         for pubchem_molecule in response_data:
             InChI_dict[pubchem_molecule[subset.upper()]] = pubchem_molecule['InChI']
 
-    return InChI_dict
+        yield InChI_dict
 
 @retry(stop_max_attempt_number=100, wait_random_min=10000, wait_random_max=30000)
 def request_json_properties_data(request_uri):

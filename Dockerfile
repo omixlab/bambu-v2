@@ -3,7 +3,7 @@ COPY . /home/
 WORKDIR /home
 RUN apt-get update
 RUN apt install -y build-essential
-RUN conda env create --file environment.yml
+RUN conda env create --file environment.linux.yml
 RUN conda init bash
 
 ENV PATH /opt/conda/envs/bambu-qsar/bin:$PATH

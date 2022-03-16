@@ -1,3 +1,5 @@
+![](https://img.shields.io/docker/pulls/omixlab/bambu-qsar)
+
 # Bambu
 
 ![](media/logo.png)

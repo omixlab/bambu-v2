@@ -6,7 +6,7 @@
 
 ![](media/logo.png)
 
-Bambu (*BioAssays Model Builder*), is a simple tool to generate QSAR models based on [PubChem BioAssays](https://pubchem.ncbi.nlm.nih.gov/) datasets. It uses mainly on [RDKit](https://rdkit.org/) and the [FLAML AutoML framework](https://github.com/microsoft/FLAML) and provides utilitaries for downloading and preprocessing datasets, as well training and running the predictive models.
+Bambu (*BioAssays Model Builder*), is a simple tool to generate QSAR models based on [PubChem BioAssays](https://pubchem.ncbi.nlm.nih.gov/) datasets. It relies on [RDKit](https://rdkit.org/) and the [FLAML AutoML framework](https://github.com/microsoft/FLAML) and provides utilitaries for downloading and preprocessing datasets, as well training and running the predictive models.
 
 ## Try it!
 

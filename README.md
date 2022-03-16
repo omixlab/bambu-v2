@@ -96,12 +96,14 @@ with the test one, and furtherly randomizing the training labels and several tim
 are computed again and significancy value (p-value) is computed based
 on the z-score-normalized metrics.
 
+```
 $bambu-validate \
 	--input-train 29_preprocess_train.csv \
 	--input-test 29_preprocess_test.csv \
 	--model 29_model.pickle \
 	--output 29_model.validation.json \
 	--randomizations 100
+```
 
 ## Predict
 

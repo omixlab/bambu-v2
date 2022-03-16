@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PUBCHEM_BIOASSAY_ID=39
+PUBCHEM_BIOASSAY_ID=29
 TEST_INPUT_FILE=pubchem_sample.sdf
 
 if [ -f $TEST_INPUT_FILE.gz ]; then
@@ -36,7 +36,7 @@ bambu-train \
 	--output $PUBCHEM_BIOASSAY_ID\_model.pickle \
 	--model-history \
 	--time-budget 3600 \
-	--estimators rf
+	--estimators extra_tree
 
 # validate the predictive model using a test dataset
 

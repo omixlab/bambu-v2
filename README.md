@@ -99,8 +99,3 @@ $ bambu-predict \
 	--model 29_model.pickle \
 	--output 29_predictions.csv
 ``` 
-
-## Benchmarks
-
-Tox21
-

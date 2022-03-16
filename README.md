@@ -114,3 +114,9 @@ $ bambu-predict \
 	--model 29_model.pickle \
 	--output 29_predictions.csv
 ``` 
+
+# Contact
+
+Feel free to open issues or pull requests! You may also contact us by email.
+
+Dr. Frederico Schmitt Kremer, PhD. E-mail: [fred.s.kremer@gmail.com](fred.s.kremer@gmail.com).

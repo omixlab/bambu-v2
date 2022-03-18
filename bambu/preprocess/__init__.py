@@ -101,8 +101,9 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
             mol_features['activity'] = 1 if row.activity == "active" else 0
         except:
             continue
-
-        pd.DataFrame([mol_features], columns=[*preprocessor.features, 'activity']).to_csv(
+        
+        df_features = pd.DataFrame([mol_features], columns=[*preprocessor.features, 'activity'])
+        df_features.to_csv(
             output_file, 
             index=False, 
             mode='w' if r == 0 else 'a',
@@ -124,9 +125,6 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_test_split_percent)
 
-        X_train = X_train.astype(np.float32)
-        X_test  = X_test.astype(np.float32)
-
         df_output_train = pd.DataFrame(X_train)
         df_output_train['activity'] = y_train
         df_output_train = clean_dataset(df_output_train)
@@ -138,10 +136,10 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
         df_output_test.to_csv(test_filepath, index=False)
 
 def clean_dataset(df):
-    df = df.astype(np.float32)
-    df.dropna(inplace=True)
-    indices_to_keep = ~df.isin([np.nan, np.inf, -np.inf]).any(1)
-    return df[indices_to_keep].astype(np.float32)
+    df       = df.astype(np.float32, errors = 'ignore')
+    df_clean = df.fillna(0)
+    indices_to_keep = ~df_clean.isin([np.nan, np.inf, -np.inf]).any(1)
+    return df_clean[indices_to_keep].astype(np.float32)
 
 if __name__ == "__main__":
     main()

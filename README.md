@@ -97,7 +97,7 @@ are computed again and significancy value (p-value) is computed based
 on the z-score-normalized metrics.
 
 ```
-$bambu-validate \
+$ bambu-validate \
 	--input-train 29_preprocess_train.csv \
 	--input-test 29_preprocess_test.csv \
 	--model 29_model.pickle \

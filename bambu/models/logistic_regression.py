@@ -12,11 +12,6 @@ class LogisticRegressionEstimator(SKLearnEstimator):
     def search_space(cls, data_size, **params):
 
         search_space = {
-            "dual": {
-                "domain": tune.choice([True, False]),
-                "init_value": False
-            },
-        
             "tol": {
                 "domain": tune.uniform(lower=1e-5, upper=1e5),
                 "init_value": 1e-5

@@ -44,7 +44,7 @@ class GradientBoostingEstimator(SKLearnEstimator):
                 "init_value": 2
             },
             "min_weight_fraction_leaf": {
-                "domain": tune.uniform(lower=1e-5, upper=1),
+                "domain": tune.uniform(lower=1e-5, upper=0.5),
                 "init_value": 1e-5
             },
             "max_features": {

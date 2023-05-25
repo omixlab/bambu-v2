@@ -27,10 +27,6 @@ class GradientBoostingEstimator(SKLearnEstimator):
                 "domain": tune.uniform(lower=1e-2, upper=1.0),
                 "init_value": 1.0
             },
-            "criterion": {
-                "domain": tune.choice(["friedman_mse", "squared_error", "mse", "mae"]),
-                "init_value": "friedman_mse"
-            },
             "max_depth": {
                 "domain": tune.randint(lower=4, upper=200),
                 "init_value": 4

@@ -1,7 +1,7 @@
 pandas 
 numpy
 scikit-learn
-flaml
+flaml==1.0.0
 imbalanced-learn 
 requests
 tqdm

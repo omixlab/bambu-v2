@@ -15,6 +15,7 @@ def main():
     
     argument_parser = ArgumentParser(prog="bambu-download", description="Downloads data from a PubChem BioAssays dataset")
     argument_parser.add_argument('--pubchem-assay-id', required=True, help="Assay ID")
+    argument_parser.add_argument('--download-all', action='store_true', default=False)
     argument_parser.add_argument('--pubchem-InchI-chunksize', default=100, type=int, help="Number of InchI formulas to be downloaded per request")
     argument_parser.add_argument('--output', required=True, help="output file with the InchI formula and activity label for each compound/substance tested in the assay")
 
@@ -23,16 +24,22 @@ def main():
     download_pubchem_assay_data(
         pubchem_assay_id=arguments.pubchem_assay_id, 
         pubchem_InchI_chunksize=arguments.pubchem_InchI_chunksize,
+        download_all=arguments.download_all,
         output=arguments.output
     )
 
-def download_pubchem_assay_data(pubchem_assay_id, output, pubchem_InchI_chunksize, pubchem_molecule_type='compounds'):
+def download_pubchem_assay_data(pubchem_assay_id, output, pubchem_InchI_chunksize, download_all=False, pubchem_molecule_type='compounds'):
 
     df = pd.DataFrame(columns=['pubchem_molecule_id', 'pubchem_molecule_type', 'InChI', 'activity'])
 
     counter = 0
 
-    for a, activity in enumerate(['active', 'inactive']):
+    if download_all:
+        activities = ['all']
+    else:
+        activities = ['active', 'inactive']
+
+    for a, activity in enumerate(activities):
 
         pubchem_ids = get_assay_molecules_ids(
             pubchem_assay_id=pubchem_assay_id, 
@@ -77,11 +84,16 @@ def get_assay_molecules_ids(pubchem_assay_id, pubchem_molecule_type='substances'
         subset = "cid"
     else:
         raise Exception('molecule type not available (use "substances" or "compounds")')
+    request_uri = f'{API_ENDPOINT}/assay/aid/{pubchem_assay_id}/{subset}s/JSON?{subset}s_type={activity}'
 
-    response = requests.get(f'{API_ENDPOINT}/assay/aid/{pubchem_assay_id}/{subset}s/JSON?{subset}s_type={activity}').text
+    response = requests.get(request_uri).text
     response_data = json.loads(response)
+
+    try:
+       return response_data['InformationList']['Information'][0][subset.upper()]
     
-    return response_data['InformationList']['Information'][0][subset.upper()]
+    except:
+        return []
 
 def get_molecules_InChIs(pubchem_molecules_ids, pubchem_molecule_type='substances', pubchem_InchI_chunksize=50):
     
@@ -97,8 +109,13 @@ def get_molecules_InChIs(pubchem_molecules_ids, pubchem_molecule_type='substance
         InChI_dict = {}
 
         pubchem_molecules_ids_chunk = pubchem_molecules_ids[i:i+pubchem_InchI_chunksize]
+
+        if len(pubchem_molecules_ids_chunk) == 0:
+            break
+        
         request_uri = f'{API_ENDPOINT}/{pubchem_molecule_type.strip("s")}/{subset}/{",".join([str(pubchem_id) for pubchem_id in pubchem_molecules_ids_chunk])}/property/InChI/JSON'
         response_data = request_json_properties_data(request_uri)
+        
         for pubchem_molecule in response_data:
             InChI_dict[pubchem_molecule[subset.upper()]] = pubchem_molecule['InChI']
 

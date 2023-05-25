@@ -138,7 +138,8 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
 def clean_dataset(df):
     df       = df.astype(np.float32, errors = 'ignore')
     df_clean = df.fillna(0)
-    indices_to_keep = ~df_clean.isin([np.nan, np.inf, -np.inf]).any(1)
+    indices_to_keep = ~df_clean.isin([np.nan, np.inf, -np.inf])
+    import pdb; pdb.set_trace()
     return df_clean[indices_to_keep].astype(np.float32)
 
 if __name__ == "__main__":

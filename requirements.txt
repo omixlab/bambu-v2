@@ -7,4 +7,5 @@ requests
 tqdm
 lightgbm
 retrying
-gensim==3.8.3
+gensim==3.8.0
+scipy==1.10.1

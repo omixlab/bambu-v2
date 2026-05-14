@@ -3,11 +3,11 @@ from bambu.preprocess.preprocessors.descriptors import DescriptorsPreprocessor
 from bambu.preprocess.preprocessors.morgan import MorganPreprocessor
 from bambu.preprocess.preprocessors.mol2vec import Mol2VecPreprocessor
 from rdkit import Chem
+from rdkit.Chem.Scaffolds import MurckoScaffold
 from pathlib import Path
 from rdkit.Chem import AllChem
 from argparse import Action, ArgumentParser, _HelpAction
 from tqdm import tqdm
-from sklearn.model_selection import train_test_split
 from imblearn.under_sampling import RandomUnderSampler 
 import argparse
 import pandas as pd
@@ -99,10 +99,13 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
         try:
             mol_features = preprocessor.compute_features(mol)
             mol_features['activity'] = 1 if row.activity == "active" else 0
+            
+            scaffold_mol = MurckoScaffold.GetScaffoldForMol(mol)
+            mol_features['scaffold'] = Chem.MolToSmiles(scaffold_mol)
         except:
             continue
         
-        df_features = pd.DataFrame([mol_features], columns=[*preprocessor.features, 'activity'])
+        df_features = pd.DataFrame([mol_features], columns=[*preprocessor.features, 'activity', 'scaffold'])
         df_features.to_csv(
             output_file, 
             index=False, 
@@ -120,25 +123,36 @@ def preprocess(input_file, output_file, output_preprocessor_file, feature_type, 
         train_filepath = f'{filepath}_train{fileext}'
         test_filepath  = f'{filepath}_test{fileext}'
 
-        X = df_output.drop(['activity'], axis=1)
-        y = df_output['activity']
+        scaffold_groups = df_output.groupby('scaffold').indices
+        scaffold_sets = list(scaffold_groups.values())
+        scaffold_sets.sort(key=len, reverse=True)
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_test_split_percent)
+        train_cutoff = int(train_test_split_percent * len(df_output))
+        
+        train_idx, test_idx = [], []
+        
+        for indices in scaffold_sets:
+            if len(train_idx) + len(indices) <= train_cutoff:
+                train_idx.extend(indices)
+            else:
+                test_idx.extend(indices)
 
-        df_output_train = pd.DataFrame(X_train)
-        df_output_train['activity'] = y_train
+        df_output = df_output.drop(columns=['scaffold'])
+
+        df_output_train = df_output.iloc[train_idx].copy()
         df_output_train = clean_dataset(df_output_train)
         df_output_train.to_csv(train_filepath, index=False)
 
-        df_output_test = pd.DataFrame(X_test)
-        df_output_test['activity'] = y_test
+        df_output_test = df_output.iloc[test_idx].copy()
         df_output_test = clean_dataset(df_output_test)
         df_output_test.to_csv(test_filepath, index=False)
+        
+        df_output.to_csv(output_file, index=False)
 
 def clean_dataset(df):
     df       = df.astype(np.float32, errors = 'ignore')
     df_clean = df.fillna(0)
-    indices_to_keep = ~df_clean.isin([np.nan, np.inf, -np.inf])
+    indices_to_keep = ~df_clean.isin([np.nan, np.inf, -np.inf]).any(axis=1)
     return df_clean[indices_to_keep].astype(np.float32)
 
 if __name__ == "__main__":
